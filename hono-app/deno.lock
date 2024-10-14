@@ -1,0 +1,35 @@
+{
+  "version": "4",
+  "specifiers": {
+    "jsr:@gizmo/http-status@*": "1.0.0",
+    "jsr:@gizmo/http-status@1": "1.0.0",
+    "jsr:@hono/hono@*": "4.6.4",
+    "jsr:@hono/hono@^4.6.4": "4.6.4",
+    "jsr:@std/assert@1": "1.0.6",
+    "jsr:@std/internal@^1.0.4": "1.0.4"
+  },
+  "jsr": {
+    "@gizmo/http-status@1.0.0": {
+      "integrity": "7fba6f65bd90498b5fa7727eb293c509cc32c148c3d9d834b2dd12881627197a"
+    },
+    "@hono/hono@4.6.4": {
+      "integrity": "9bbd937653ab902405af33743561140f8883d27dc730eb9ceac665e2468c8bf6"
+    },
+    "@std/assert@1.0.6": {
+      "integrity": "1904c05806a25d94fe791d6d883b685c9e2dcd60e4f9fc30f4fc5cf010c72207",
+      "dependencies": [
+        "jsr:@std/internal"
+      ]
+    },
+    "@std/internal@1.0.4": {
+      "integrity": "62e8e4911527e5e4f307741a795c0b0a9e6958d0b3790716ae71ce085f755422"
+    }
+  },
+  "workspace": {
+    "dependencies": [
+      "jsr:@gizmo/http-status@1",
+      "jsr:@hono/hono@^4.6.4",
+      "jsr:@std/assert@1"
+    ]
+  }
+}
