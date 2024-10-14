@@ -1,5 +1,5 @@
-# Benchmark of Actix (Rust) compared to Oak (Deno)
-This is a simple benchmark of Actix (Rust) compared to Oak (Deno).
+# Benchmark of Actix (Rust) compared to Hono (Deno)
+This is a simple benchmark of Actix (Rust) compared to Hono (Deno).
 
 ## Hardware
 Beelink EQ13[^1]
