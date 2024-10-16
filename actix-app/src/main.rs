@@ -1,4 +1,5 @@
 use actix_web::{get, post, middleware::Logger, web::{Json, scope}, App, HttpResponse, HttpServer, Responder};
+use actix_web_prometheus::PrometheusMetricsBuilder;
 use serde::{Deserialize, Serialize};
 mod aoc_2021_dive;
 use aoc_2021_dive::dive_solve;
@@ -66,9 +67,15 @@ async fn dive(instructions: Json<DiveInstructions>) -> impl Responder {
 async fn main() -> std::io::Result<()> {
     env_logger::init_from_env(env_logger::Env::new().default_filter_or("info"));
 
-    HttpServer::new(|| {
+    let promtheus = PrometheusMetricsBuilder::new("api")
+        .endpoint("/metrics")
+        .build()
+        .expect("Failed to create PrometheusMetricsBuilder");
+
+    HttpServer::new(move || {
         App::new()
             .wrap(Logger::default())
+            .wrap(promtheus.clone())
             .service(health_check)
             .service(
                 scope("/api/v1")
