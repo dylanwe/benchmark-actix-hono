@@ -1,13 +1,16 @@
 # create a pod running nginx
-apiVersion: v1
+apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: hono-app
+  namespace: benchmarking
+  labels:
+    app: hono-app
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app.kubernetes.io/name: hono-app
+      app: hono-app
   template:
     metadata:
       labels:
@@ -31,7 +34,7 @@ spec:
               path: /healthz
               port: http
           livenessProbe:
-            httpGet: 
+            httpGet:
               path: /healthz
               port: http
 --- # <-- this is how we seperate resources in the same file
@@ -40,6 +43,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: hono-service
+  namespace: benchmarking
 spec:
   type: NodePort
   selector:
