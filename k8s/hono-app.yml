@@ -15,6 +15,9 @@ spec:
     metadata:
       labels:
         app: hono-app
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "8080"
+        prometheus.io/path: "/metrics"
     spec:
       containers:
         - name: hono-app
