@@ -6,18 +6,12 @@ RUN apt-get update && apt-get install -y \
 	libssl-dev \
 	ca-certificates \
 	&& rm -rf /var/lib/apt/lists/*
-WORKDIR /usr/src/myserver
+WORKDIR ./app
 COPY . .
 RUN cargo build --release
 
 FROM debian:bookworm-slim
-# Install required runtime packages
-RUN apt-get update && apt-get install -y \
-    libssl3 \
-    ca-certificates \
-    && rm -rf /var/lib/apt/lists/*
-ARG HOST=0.0.0.0
-COPY --from=builder /usr/src/myserver/target/release/actix-server /usr/local/bin/actix-server
+COPY --from=builder ./app/target/release/actix-app ./usr/local/bin/actix-app
 EXPOSE 8080
-CMD ["actix-server"]
+CMD ["actix-app"]
 
