@@ -1,5 +1,4 @@
 import { type Context, Hono } from "jsr:@hono/hono";
-import { logger } from "jsr:@hono/hono/logger";
 import { HttpStatus } from "jsr:@gizmo/http-status";
 import { diveSolve } from "./aoc_2021_dive.ts";
 import { prometheus } from "npm:@hono/prometheus";
@@ -56,7 +55,6 @@ api.post("/dive", async (c: Context) => {
 });
 
 const app = new Hono();
-app.use(logger());
 app.route("/api/v1", api);
 
 app.get("/metrics", printMetrics);
