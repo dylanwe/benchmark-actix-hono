@@ -1,26 +1,20 @@
 import http from 'k6/http';
 import { sleep } from 'k6';
 
-// const MAX_CLIENTS = 1000;
-const MAX_CLIENTS = 400;
+const MAX_CLIENTS = 620;
 const MIN_CLIENTS = 20;
-const STAGE_INTERVAL = '30s';
+const STAGE_INTERVAL = '2m';
 const REQUEST_OPTIONS = {
   timeout: '200ms',
 };
 
-const idkStage = [{
-  target: MAX_CLIENTS,
-  duration: '30s',
-}]
-
 function setupStages() {
-  const stages = []
-  // const CLIENTS_TO_ADD = 10;
+  const stages = [];
+  const iterations = Math.floor(MAX_CLIENTS / MIN_CLIENTS);
 
-  for (let i = MIN_CLIENTS; i <= MAX_CLIENTS; i++) {
+  for (let i = 0; i < iterations; i++) {
     stages.push({
-      target: i + 1,
+      target: i * MIN_CLIENTS,
       duration: STAGE_INTERVAL,
     });
   }
@@ -30,31 +24,28 @@ function setupStages() {
 
 export const options = {
   scenarios: {
-    // deno: {
-    //   executor: 'ramping-vus',
-    //   startVUs: MIN_CLIENTS,
-    //   stages: setupStages(),
-    //   exec: 'denoTest',
-    // },
     actix: {
       executor: 'ramping-vus',
-      // startVUs: MIN_CLIENTS,
-      startVUs: MAX_CLIENTS,
-      stages: idkStage,
-      // stages: setupStages(),
+      startVUs: MIN_CLIENTS,
+      stages: setupStages(),
       exec: 'actixTest',
+    },
+    hono: {
+      executor: 'ramping-vus',
+      startVUs: MIN_CLIENTS,
+      stages: setupStages(),
+      exec: 'honoTest',
     },
   },
 };
 
-export function denoTest() {
+export function honoTest() {
   http.get('http://192.168.68.148:30008/api/v1/submarine', REQUEST_OPTIONS);
   sleep(0.02);
 }
 
 export function actixTest() {
-  http.get('http://localhost:8080/api/v1/submarine', REQUEST_OPTIONS);
-  // http.get('http://192.168.68.148:30009/api/v1/submarine', REQUEST_OPTIONS);
-  // sleep(0.02);
+  http.get('http://192.168.68.148:30009/api/v1/submarine', REQUEST_OPTIONS);
+  sleep(0.02);
 }
 
