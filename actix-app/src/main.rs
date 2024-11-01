@@ -1,4 +1,9 @@
-use actix_web::{get, post, middleware::Logger, web::{Json, scope}, App, HttpResponse, HttpServer, Responder};
+use actix_web::{
+    get, post,
+    web::{scope, Json},
+    App, HttpResponse, HttpServer, Responder,
+};
+use actix_web_prometheus::PrometheusMetricsBuilder;
 use serde::{Deserialize, Serialize};
 mod aoc_2021_dive;
 use aoc_2021_dive::dive_solve;
@@ -55,29 +60,26 @@ async fn dive(instructions: Json<DiveInstructions>) -> impl Responder {
     let instructions = instructions.into_inner();
     return match dive_solve(&instructions.instructions) {
         Ok(result) => HttpResponse::Ok().json(DiveResult { result }),
-        Err(_) => {
-            HttpResponse::BadRequest()
-                .json(DiveError { message: "Could not calculate answer".to_string() })
-        }
-    }
+        Err(_) => HttpResponse::BadRequest().json(DiveError {
+            message: "Could not calculate answer".to_string(),
+        }),
+    };
 }
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
-    env_logger::init_from_env(env_logger::Env::new().default_filter_or("info"));
+    let promtheus = PrometheusMetricsBuilder::new("api")
+        .endpoint("/metrics")
+        .build()
+        .expect("Failed to create PrometheusMetricsBuilder");
 
-    HttpServer::new(|| {
+    HttpServer::new(move || {
         App::new()
-            .wrap(Logger::default())
+            .wrap(promtheus.clone())
             .service(health_check)
-            .service(
-                scope("/api/v1")
-                    .service(get_submarine)
-                    .service(dive)
-            )
+            .service(scope("/api/v1").service(get_submarine).service(dive))
     })
     .bind(("0.0.0.0", 8080))?
     .run()
     .await
 }
-

@@ -1,7 +1,9 @@
 import { type Context, Hono } from "jsr:@hono/hono";
-import { logger } from "jsr:@hono/hono/logger";
 import { HttpStatus } from "jsr:@gizmo/http-status";
 import { diveSolve } from "./aoc_2021_dive.ts";
+import { prometheus } from "npm:@hono/prometheus";
+
+const { printMetrics, registerMetrics } = prometheus();
 
 interface Submarine {
   id: number;
@@ -10,7 +12,8 @@ interface Submarine {
 }
 
 const api = new Hono();
-api.get("/sumbarine", (c: Context) => {
+api.use("*", registerMetrics);
+api.get("/submarine", (c: Context) => {
   const submarine: Submarine = {
     id: 1,
     name: "The Ahab",
@@ -52,8 +55,9 @@ api.post("/dive", async (c: Context) => {
 });
 
 const app = new Hono();
-app.use(logger());
 app.route("/api/v1", api);
+
+app.get("/metrics", printMetrics);
 
 app.get("/healthz", (c: Context) => {
   return c.json(
